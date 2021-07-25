@@ -1,6 +1,6 @@
 services:
-  web:
-    image: 5dc20ef0aed7
+  lemp:
+    image: 21b40eb7ab34
     ports:
       - 80:80
       - 3306:3306
@@ -9,3 +9,5 @@ services:
       - ./nginx/html:/var/www/html
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./www:/www
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234

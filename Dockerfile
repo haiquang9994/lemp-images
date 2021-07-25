@@ -29,17 +29,12 @@ RUN mkdir -p /run/php && \
     chown -R www-data:www-data /run/php
 
 # MySQL
-RUN echo "mysql-server mysql-server/root_password password 1234" | debconf-set-selections
-RUN echo "mysql-server mysql-server/root_password_again password 1234" | debconf-set-selections
+RUN echo "mysql-server mysql-server/root_password password root" | debconf-set-selections
+RUN echo "mysql-server mysql-server/root_password_again password root" | debconf-set-selections
 RUN apt-get install -y mysql-server
 RUN mkdir /var/run/mysqld
 RUN chown mysql:mysql /var/run/mysqld
 COPY ./mysql/my.cnf /etc/mysql/my.cnf
-COPY ./mysql/.my.cnf /root/.my.cnf
-RUN mysqld_safe & \
-    sleep 5 && \
-    echo "GRANT ALL ON *.* TO root@'%' IDENTIFIED BY '1234' WITH GRANT OPTION; FLUSH PRIVILEGES" | mysql
-# RUN mysqladmin shutdown
 
 # Redis
 RUN apt-get install -y redis-server
@@ -47,11 +42,14 @@ RUN apt-get install -y redis-server
 # Supervisor
 RUN apt-get install -y supervisor
 COPY ./supervisord.conf /etc/supervisor/supervisord.conf
-CMD /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
+COPY ./run.sh /
 
 # Clean
 RUN rm -rf /var/lib/apt/lists/* && \
     apt-get clean
+
+
+CMD ["/run.sh"]
 
 # Expose ports
 EXPOSE 80 3306 6379
