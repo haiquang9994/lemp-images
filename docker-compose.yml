@@ -1,6 +1,11 @@
 services:
   web:
-    image: 90f662c08a1e
+    image: 5dc20ef0aed7
     ports:
       - 80:80
       - 3306:3306
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/html:/var/www/html
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./www:/www
