@@ -1,0 +1,6 @@
+services:
+  web:
+    image: e3842b685eb5
+    ports:
+      - 80:80
+      - 3306:3306
