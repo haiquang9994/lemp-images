@@ -34,21 +34,19 @@ RUN echo "mysql-server mysql-server/root_password_again password root" | debconf
 RUN apt-get install -y mysql-server
 RUN mkdir /var/run/mysqld
 RUN chown mysql:mysql /var/run/mysqld
-COPY ./mysql/my.cnf /etc/mysql/my.cnf
+COPY config/my.cnf /etc/mysql/my.cnf
 
 # Redis
 RUN apt-get install -y redis-server
 
-# Supervisor
-RUN apt-get install -y supervisor
-COPY ./supervisord.conf /etc/supervisor/supervisord.conf
-COPY ./run.sh /
-
 # Clean
-RUN rm -rf /var/lib/apt/lists/* && \
+RUN apt-get install -y supervisor && \
+    rm -rf /var/lib/apt/lists/* && \
     apt-get clean
 
-
+# Script
+COPY supervisord.conf /etc/supervisor/supervisord.conf
+COPY run.sh /
 CMD ["/run.sh"]
 
 # Expose ports
