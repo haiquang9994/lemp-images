@@ -24,6 +24,8 @@ RUN apt-get install -y mysql-server
 RUN mkdir /var/run/mysqld
 RUN chown mysql:mysql /var/run/mysqld
 
+COPY ./mysql/my.cnf /etc/mysql/my.cnf
+
 COPY ./supervisor/supervisord.conf /etc/supervisor/supervisord.conf
 
 CMD /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
