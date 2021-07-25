@@ -13,18 +13,26 @@ RUN echo "mysql-server mysql-server/root_password password 1234" | debconf-set-s
 RUN echo "mysql-server mysql-server/root_password_again password 1234" | debconf-set-selections
 RUN apt-get install -y mysql-server
 
-# RUN { \
-#     # echo mysql-community-server mysql-community-server/data-dir select ''; \
-#     echo mysql-community-server mysql-community-server/root-pass password '1234'; \
-#     echo mysql-community-server mysql-community-server/re-root-pass password '1234'; \
-#     # echo mysql-community-server mysql-community-server/remove-test-db select false; \
-# } | debconf-set-selections \
-# && apt-get update && apt-get install -y mysql-server
-
 RUN mkdir /var/run/mysqld
 RUN chown mysql:mysql /var/run/mysqld
 
 COPY ./mysql/my.cnf /etc/mysql/my.cnf
+COPY ./mysql/.my.cnf /root/.my.cnf
+
+RUN mysqld_safe & \
+    sleep 5 && \
+    echo "GRANT ALL ON *.* TO root@'%' IDENTIFIED BY '1234' WITH GRANT OPTION; FLUSH PRIVILEGES" | mysql
+
+# RUN mysqladmin shutdown
+
+
+RUN add-apt-repository -y ppa:ondrej/php
+# ENV TZ=Asia/Ho_Chi_Minh
+ENV DEBIAN_FRONTEND=noninteractive
+# RUN DEBIAN_FRONTEND="noninteractive"
+# RUN echo 'tzdata tzdata/Areas select Asia' | debconf-set-selections
+# RUN echo 'tzdata tzdata/Zones/Asia select Ho_Chi_Minh' | debconf-set-selections
+RUN apt-get install -y php7.4-fpm php7.4-mbstring php7.4-json php7.4-xml php7.4-zip php7.4-curl php7.4-mysql php7.4-gd php7.4-soap php7.4-dev php7.4-intl
 
 COPY ./supervisor/supervisord.conf /etc/supervisor/supervisord.conf
 
