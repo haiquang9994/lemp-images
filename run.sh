@@ -1,7 +1,6 @@
 #!/bin/sh
 
 mkdir /mysql
-# mkdir /mysql/data
 
 if [ -z "$MYSQL_ROOT_PASSWORD" ]
 then
@@ -29,5 +28,6 @@ then
     /usr/sbin/mysqld --initialize --datadir=/var/lib/mysql --init-file=/mysql/init.sql
 fi
 
+chmod 600 /etc/mysql/my.cnf
 
 /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf
