@@ -1,6 +1,8 @@
 #!/bin/sh
 
 mkdir /mysql
+# mkdir /mysql/data
+
 if [ -z "$MYSQL_ROOT_PASSWORD" ]
 then
     echo "USE mysql;
@@ -20,6 +22,12 @@ user=root
 password=$MYSQL_ROOT_PASSWORD" > /root/.my.cnf
 fi
 
-chown -R mysql:mysql /mysql
+chown -R mysql:adm /mysql
+
+if [ "$(find /var/lib/mysql -maxdepth 0 -empty -exec echo 'EMPTY' \;)" = "EMPTY" ]
+then
+    /usr/sbin/mysqld --initialize --datadir=/var/lib/mysql --init-file=/mysql/init.sql
+fi
+
 
 /usr/bin/supervisord -n -c /etc/supervisor/supervisord.conf

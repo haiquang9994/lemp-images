@@ -29,15 +29,24 @@ RUN mkdir -p /run/php && \
     chown -R www-data:www-data /run/php
 
 # MySQL
-RUN echo "mysql-server mysql-server/root_password password root" | debconf-set-selections
-RUN echo "mysql-server mysql-server/root_password_again password root" | debconf-set-selections
 RUN apt-get install -y mysql-server
 RUN mkdir /var/run/mysqld
 RUN chown mysql:mysql /var/run/mysqld
-COPY config/my.cnf /etc/mysql/my.cnf
+RUN rm -rf /var/lib/mysql/*
 
 # Redis
 RUN apt-get install -y redis-server
+
+# Soft
+RUN apt-get install -y git zip unzip
+RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
+    php composer-setup.php && \
+    rm composer-setup.php && \
+    mv composer.phar /usr/local/bin/composer && \
+    chmod +x /usr/local/bin/composer
+RUN curl -LO https://deployer.org/deployer.phar && \
+    mv deployer.phar /usr/local/bin/dep && \
+    chmod +x /usr/local/bin/dep
 
 # Clean
 RUN apt-get install -y supervisor && \
@@ -46,8 +55,8 @@ RUN apt-get install -y supervisor && \
 
 # Script
 COPY supervisord.conf /etc/supervisor/supervisord.conf
-COPY run.sh /
-CMD ["/run.sh"]
+COPY run.sh /usr/local/bin/docker-run.sh
+CMD ["docker-run.sh"]
 
 # Expose ports
-EXPOSE 80 3306 6379
+EXPOSE 80 443 3306 6379
