@@ -59,4 +59,4 @@ COPY run.sh /usr/local/bin/docker-run.sh
 CMD ["docker-run.sh"]
 
 # Expose ports
-EXPOSE 80 443 3306 6379
+EXPOSE 3306 6379 443 80
